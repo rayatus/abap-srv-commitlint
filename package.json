@@ -1,6 +1,7 @@
 {
   "name": "abap-srv-commitlint",
   "version": "1.0.0",
+  "private": true,
   "description": "PoC executing CommitLint via Express server",
   "main": "index.js",
   "scripts": {
@@ -14,10 +15,13 @@
   },
   "type": "module",
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Jorge Sancho Royo",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/rayatus/abap-srv-commitlint/issues"
+  },
+  "engines": {
+    "node": "16.x.x"
   },
   "homepage": "https://github.com/rayatus/abap-srv-commitlint#readme",
   "dependencies": {
