@@ -1,0 +1,31 @@
+{
+  "name": "abap-srv-commitlint",
+  "version": "1.0.0",
+  "description": "PoC executing CommitLint via Express server",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "debug": "node index.js",
+    "watch": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rayatus/abap-srv-commitlint.git"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rayatus/abap-srv-commitlint/issues"
+  },
+  "homepage": "https://github.com/rayatus/abap-srv-commitlint#readme",
+  "dependencies": {
+    "@commitlint/config-conventional": "^17.4.0",
+    "@commitlint/core": "^17.4.0",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}

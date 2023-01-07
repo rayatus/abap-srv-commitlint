@@ -1,0 +1,9 @@
+---
+applications:
+- name: abap-srv-commitlint
+  random-route: true
+  memory: 512M
+  instances: 1
+  buildpacks:
+  - nodejs_buildpack
+  command: npm start
