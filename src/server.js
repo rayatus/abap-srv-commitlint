@@ -27,23 +27,11 @@ export function run() {
 
   //inject helmet for header offuscation
   srv.use(helmet());
-  //allow to parse Body
+  //allow to manually parse Body, in case client sends a JSON in text/plain
   srv.use(rawBody);
-  //srv.use(express.json())
-  //srv.use(express.methodOverride());
 
 
-  //Ping / Help
-  srv.get('/help', (_req, res) => {
-    const help = {}
-
-    res.setHeader('content-type', 'application/json')
-    res.status(200)
-      .send(help)
-  })
-
-
-  //GET default rules
+  //Get default rules
   srv.get('/default_rules', (_req, res) => {
     console.info(`Serving default_rules`)
     res.setHeader('content-type', 'application/json')
@@ -55,8 +43,8 @@ export function run() {
   srv.post('/lint', async (req, res, _next) => {
 
     console.info(`Begin -> Linting commit message`)
-    const payload = getPayload(req)
-    console.info(`Payload: ${payload}`)
+    const payload = mapPayload(req) //Convert Payload into expected format (JSON)
+    console.info(`Payload: ${JSON.stringify(payload)}`)
 
     let rules = payload.rules
     if (isEmptyObject(rules)) {
@@ -67,9 +55,9 @@ export function run() {
     try {
       const report = await commitlint.lint(payload.message, rules)
 
-    res.setHeader('content-type', 'application/json')
-    res.status(200)
-      .send(JSON.stringify(report))
+      res.setHeader('content-type', 'application/json')
+      res.status(200)
+        .send(JSON.stringify(report))
 
     } catch (error) {
       res.setHeader('content-type', 'application/text')
@@ -82,24 +70,27 @@ export function run() {
 
   //Wrong URI path
   srv.use("*", (req, res) => {
-    res.status(404).send(`forbidden: unexpected request ${req.originalUrl}`);
+    res.status(404).send(`forbidden: unexpected request to '${req.originalUrl}'`);
   });
 
   function isEmptyObject(obj) {
     return !obj || Object.keys(obj).length === 0;
   }
 
-  function getPayload(req) {
-    if (req.is('json')) {
-      return JSON.parse(req.rawBody)
-    }
-    if (req.is('text/*')) {
+  function mapPayload(req) {
+    try {
+      const { message, rules } = JSON.parse(req.rawBody)
+      return {
+        message: message,
+        rules: rules
+      }
+    } catch (error) {
       return {
         message: req.rawBody,
         rules: {}
       }
     }
-
   }
 }
+
 
