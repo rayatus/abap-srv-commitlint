@@ -58,10 +58,8 @@ export default () => {
   //allow to manually parse Body, in case client sends a JSON in text/plain
   srv.use(bodyParser);
 
-  //Set Port
-  const PORT = process.env.PORT || 8080
   //Hook server to port
-  srv.listen(PORT, () => { console.log('Server is up') })
+  srv.listen(process.env.PORT || 8080, () => { console.log('Server is up') })
   //Get default rules  
   srv.get('/default_rules', (_req, res) => serveDefaultRules(res))
   //Execute lint
