@@ -25,7 +25,7 @@ const mapPayload = function (req) {
   }
 }
 
-const serveDefaultRules = (_req, res) => {
+const serveDefaultRules = (res) => {
   console.info(`Serving default rules`)
   res.setHeader('content-type', 'application/json')
   res.status(200).send(conventional.rules)
@@ -63,7 +63,7 @@ export default () => {
   //Hook server to port
   srv.listen(PORT, () => { console.log('Server is up') })
   //Get default rules  
-  srv.get('/default_rules', (req, res) => serveDefaultRules(req, res))
+  srv.get('/default_rules', (_req, res) => serveDefaultRules(res))
   //Execute lint
   srv.post('/lint', (req, res) => Lint(req, res))
   //Wrong URI path
