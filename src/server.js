@@ -35,11 +35,10 @@ const getDefaultRules = (_req, res) => {
 
 const Lint = async (req, res, _next) => {
   const payload = mapPayload(req) //Convert Payload into expected format (JSON)
+  console.info(`Linting ${JSON.stringify(payload.message)}`)
+
   const rules = (isEmptyObject(payload.rules))
-    ? () => {
-      console.info(`No rules provided, linting with Default Conventional Rules`)
-      return conventional.rules
-    }
+    ? conventional.rules  
     : payload.rules
 
   const report = await commitlint.lint(payload.message, rules).catch((error) => {
@@ -70,9 +69,9 @@ export function run() {
   //allow to manually parse Body, in case client sends a JSON in text/plain
   srv.use(rawBody);
   //Get default rules  
-  srv.get('/default_rules', getDefaultRules(req, res))
+  srv.get('/default_rules', (req, res) => getDefaultRules(req, res))
   //Execute lint
-  srv.post('/lint', Lint(req, res, next))
+  srv.post('/lint', (req, res, next) => Lint(req, res, next))
   //Wrong URI path
   srv.use("*", (req, res) => {
     res.status(404).send(`forbidden: unexpected request to '${req.originalUrl}'`);
