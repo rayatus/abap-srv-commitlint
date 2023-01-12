@@ -3,13 +3,11 @@ import helmet from "helmet";
 import commitlint from "@commitlint/core"
 import conventional from "@commitlint/config-conventional"
 
-const rawBody = function (req, _res, next) {
-  req.setEncoding('utf8');
-  req.rawBody = '';
-  req.on('data', (chunk) => (req.rawBody += chunk));
-  req.on('end', function () {
-    next();
-  });
+const bodyParser = function (req, _res, next) {
+  req.setEncoding('utf8')
+  req.rawBody = ''
+  req.on('data', (chunk) => (req.rawBody += chunk))
+  req.on('end', () => next())
 }
 
 const isEmptyObject = function (obj) {
@@ -27,13 +25,13 @@ const mapPayload = function (req) {
   }
 }
 
-const getDefaultRules = (_req, res) => {
+const serveDefaultRules = (_req, res) => {
   console.info(`Serving default rules`)
   res.setHeader('content-type', 'application/json')
   res.status(200).send(conventional.rules)
 }
 
-const Lint = async (req, res, _next) => {
+const Lint = async (req, res) => {
   const payload = mapPayload(req) //Convert Payload into expected format (JSON)
   console.info(`Linting ${JSON.stringify(payload.message)}`)
 
@@ -44,7 +42,7 @@ const Lint = async (req, res, _next) => {
   const report = await commitlint.lint(payload.message, rules).catch((error) => {
     res.setHeader('content-type', 'application/text')
     res.status(400).send(error.message)
-    console.error(`Error: ${error.message}`);
+    console.error(`Error: ${error.message}`)
     return
   });
 
@@ -52,32 +50,24 @@ const Lint = async (req, res, _next) => {
   res.status(200).send(JSON.stringify(report))
 }
 
-
-export function run() {
+export default () => {
 
   const srv = express()
+  //inject helmet for header offuscation
+  srv.use(helmet());
+  //allow to manually parse Body, in case client sends a JSON in text/plain
+  srv.use(bodyParser);
 
   //Set Port
   const PORT = process.env.PORT || 8080
   //Hook server to port
-  srv.listen(PORT, () => {
-    console.log('Server is up')           
-  })
-
-  //inject helmet for header offuscation
-  srv.use(helmet());
-  //allow to manually parse Body, in case client sends a JSON in text/plain
-  srv.use(rawBody);
+  srv.listen(PORT, () => { console.log('Server is up') })
   //Get default rules  
-  srv.get('/default_rules', (req, res) => getDefaultRules(req, res))
+  srv.get('/default_rules', (req, res) => serveDefaultRules(req, res))
   //Execute lint
-  srv.post('/lint', (req, res, next) => Lint(req, res, next))
+  srv.post('/lint', (req, res) => Lint(req, res))
   //Wrong URI path
   srv.use("*", (req, res) => {
     res.status(404).send(`forbidden: unexpected request to '${req.originalUrl}'`);
   });
 }
-
-
-
-

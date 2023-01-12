@@ -1,2 +1,2 @@
-import { run } from "./src/server.js"
-run()
+import server from "./src/server.js"
+server()
