@@ -16,7 +16,7 @@ const isEmptyObject = function (obj) {
 
 const mapPayload = function (req) {
   try {
-    return { message, rules } = JSON.parse(req.rawBody)
+    return ({ message, rules } = JSON.parse(req.rawBody))
   } catch (error) {
     return {
       message: req.rawBody,
