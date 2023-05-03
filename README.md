@@ -1,5 +1,5 @@
 # abap-srv-commitlint
-**PoC** for executing [CommitLint](https://commitlint.js.org) via Node Express server
+Repo for executing [CommitLint](https://commitlint.js.org) via Node Express server
 meant to be used in [abapgit-commitlint](https://github.com/rayatus/abapgit-commitlint)
 
 ## Work in progress
